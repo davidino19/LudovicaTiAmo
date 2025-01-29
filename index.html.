@@ -10,15 +10,23 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: #ffe4e1;
+            background: #ffdfdf;
             font-family: 'Arial', sans-serif;
             margin: 0;
+            overflow: hidden;
+            animation: bgAnimation 15s infinite;
+        }
+
+        @keyframes bgAnimation {
+            0% { background-color: #ffdfdf; }
+            50% { background-color: #ffb3b3; }
+            100% { background-color: #ffdfdf; }
         }
 
         .envelope {
             position: relative;
-            width: 300px;
-            height: 200px;
+            width: 320px;
+            height: 220px;
             background: #ff6b81;
             border-radius: 10px;
             display: flex;
@@ -26,6 +34,12 @@
             align-items: flex-end;
             overflow: hidden;
             box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+            animation: envelopeAnimation 1s ease-out;
+        }
+
+        @keyframes envelopeAnimation {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
         .flap {
@@ -37,6 +51,7 @@
             border-right: 150px solid transparent;
             border-bottom: 100px solid #ff4757;
             transition: 0.5s ease-in-out;
+            transform-origin: top;
         }
 
         .letter {
@@ -49,10 +64,12 @@
             text-align: center;
             transform: translateY(100%);
             transition: transform 0.5s ease-in-out;
+            opacity: 0;
         }
 
         .envelope.open .letter {
             transform: translateY(0);
+            opacity: 1;
         }
 
         .envelope.open .flap {
@@ -60,24 +77,37 @@
         }
 
         h1 {
-            font-size: 18px;
+            font-size: 22px;
             color: red;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
+            animation: textAnimation 2s ease-in-out;
+        }
+
+        @keyframes textAnimation {
+            from { transform: translateY(-100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .buttons {
-            margin-top: 10px;
+            margin-top: 20px;
             display: flex;
             justify-content: space-evenly;
         }
 
         button {
-            font-size: 16px;
-            padding: 6px 12px;
+            font-size: 18px;
+            padding: 10px 20px;
             border: none;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 10px;
             transition: 0.3s;
+            opacity: 0;
+            animation: buttonFadeIn 1s ease-in-out forwards;
+        }
+
+        @keyframes buttonFadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
         }
 
         .yes {
@@ -97,10 +127,33 @@
         }
 
         .message {
-            font-size: 12px;
+            font-size: 16px;
             color: red;
-            margin-top: 10px;
+            margin-top: 20px;
             display: none;
+            animation: messageAnimation 3s ease-in-out;
+        }
+
+        @keyframes messageAnimation {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .message.first {
+            font-size: 20px;
+            color: #ff6b81;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            animation: centerMessage 2s forwards;
+        }
+
+        @keyframes centerMessage {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
     </style>
 </head>
@@ -109,7 +162,7 @@
     <div class="envelope" onclick="openEnvelope()">
         <div class="flap"></div>
         <div class="letter">
-            <h1>Would you be my Valentine? ❤️</h1>
+            <h1>Would you be my Valentine? 💌</h1>
             <div class="buttons">
                 <button class="yes" onclick="showMessage(event)">Yes</button>
                 <button class="no" onclick="addMoreYes(event)">No</button>
@@ -121,16 +174,21 @@
     <script>
         function openEnvelope() {
             document.querySelector('.envelope').classList.add('open');
+            setTimeout(() => {
+                document.querySelector('.buttons').style.opacity = 1;
+            }, 600);
         }
 
         function showMessage(event) {
             event.stopPropagation();
-            document.querySelector('.message').style.display = 'block';
+            const message = document.querySelector('.message');
+            message.style.display = 'block';
+            message.classList.add('first');
         }
 
         function addMoreYes(event) {
             event.stopPropagation();
-            let container = document.querySelector('.letter');
+            const container = document.querySelector('.letter');
 
             let yesButton = document.createElement('button');
             yesButton.innerText = "Yes";
@@ -140,8 +198,10 @@
             yesButton.style.position = "absolute";
             yesButton.style.left = Math.random() * 60 + "%";
             yesButton.style.top = Math.random() * 50 + "%";
+            yesButton.style.animation = "buttonFadeIn 1s ease-in-out forwards";
 
             container.appendChild(yesButton);
+            setTimeout(() => { document.querySelector('.message').style.display = 'block'; }, 200);
         }
     </script>
 
